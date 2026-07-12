@@ -4,6 +4,8 @@
 # Logs & Debugging
 debug_smtp.log
 debug_emails.txt
+debug_ai.log
+debug_response.json
 
 # Composer dependencies
 /vendor/
