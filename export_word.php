@@ -148,7 +148,7 @@ header("Content-Disposition: attachment; filename=" . $filename);
     <table>
         <tr>
             <td style="width: 20%; text-align: center; vertical-align: middle; font-weight: bold; font-size: 14pt;">
-                UVCRS
+                UVERS
             </td>
             <td class="kop-title" style="width: 80%; vertical-align: middle; text-align: center;">
                 RENCANA PEMBELAJARAN SEMESTER (RPS)

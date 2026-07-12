@@ -265,7 +265,7 @@ $sarana_khusus_list = array_filter(explode("\n", $rps['sarana_khusus'] ?? ''));
     <table class="kop-table">
         <tr>
             <td style="width: 15%; text-align: center; vertical-align: middle; font-weight: bold; font-size: 14pt; border: 1px solid #000; font-family: 'Arial Black', sans-serif; color: #1e3a8a;">
-                UVCRS
+                UVERS
             </td>
             <td style="width: 60%; text-align: center; vertical-align: middle; font-weight: bold; font-size: 12pt; text-transform: uppercase;">
                 Rencana Pembelajaran Semester (RPS)
