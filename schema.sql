@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `rps_generator`;
 USE `rps_generator`;
 
+-- 1. Tabel users
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `username` VARCHAR(50) NOT NULL UNIQUE,
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 2. Tabel rps
 CREATE TABLE IF NOT EXISTS `rps` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
@@ -30,24 +32,37 @@ CREATE TABLE IF NOT EXISTS `rps` (
   `cpmk` TEXT DEFAULT NULL,
   `sub_cpmk` TEXT DEFAULT NULL,
   `deskripsi_mk` TEXT DEFAULT NULL,
+  `no_dokumen` VARCHAR(100) DEFAULT 'F-M2.STD-PD-3.6',
+  `revisi` VARCHAR(50) DEFAULT '02',
+  `tanggal_penyusunan` VARCHAR(100) DEFAULT '30 November 2023',
+  `prasyarat` VARCHAR(255) DEFAULT '-',
+  `bahan_kajian` TEXT DEFAULT NULL,
+  `referensi_utama` TEXT DEFAULT NULL,
+  `referensi_pendukung` TEXT DEFAULT NULL,
+  `sarana_umum` TEXT DEFAULT NULL,
+  `sarana_khusus` TEXT DEFAULT NULL,
   `status` VARCHAR(20) DEFAULT 'draft',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 3. Tabel rps_meetings
 CREATE TABLE IF NOT EXISTS `rps_meetings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `rps_id` INT NOT NULL,
   `pertemuan_ke` INT NOT NULL,
   `sub_cpmk` TEXT DEFAULT NULL,
   `bahan_kajian` TEXT DEFAULT NULL,
-  `metode_pembelajaran` TEXT DEFAULT NULL,
   `estimasi_waktu` VARCHAR(100) DEFAULT NULL,
-  `indikator_kriteria` TEXT DEFAULT NULL,
   `bobot_penilaian` DECIMAL(5,2) DEFAULT 0.00,
+  `metode_luring` TEXT DEFAULT NULL,
+  `metode_daring` TEXT DEFAULT NULL,
+  `indikator_penilaian` TEXT DEFAULT NULL,
+  `bentuk_penilaian` TEXT DEFAULT NULL,
   FOREIGN KEY (`rps_id`) REFERENCES `rps` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 4. Tabel email_logs
 CREATE TABLE IF NOT EXISTS `email_logs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `to_email` VARCHAR(100) NOT NULL,
@@ -58,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `email_logs` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 5. Tabel activity_logs
 CREATE TABLE IF NOT EXISTS `activity_logs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT DEFAULT NULL,
