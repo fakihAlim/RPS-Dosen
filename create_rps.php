@@ -273,7 +273,7 @@ require_once 'header.php';
 
         <!-- Indikator Loading Pertemuan -->
         <div class="loading-container" id="loading-meetings" style="display: none; flex-direction: column; align-items: center; justify-content: center;">
-            <dotlottie-player src="assets/images/loading.lottie" background="transparent" speed="1" style="width: 180px; height: 180px; margin-bottom: 1rem;" loop autoplay></dotlottie-player>
+            <dotlottie-player src="loading.lottie" background="transparent" speed="1" style="width: 280px; height: 280px; margin-bottom: 1rem;" loop autoplay></dotlottie-player>
             <h3 style="margin-top: 0;">AI sedang menyusun silabus 16 pertemuan...</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; max-width: 500px; text-align: center;">
                 Proses ini memerlukan waktu lebih lama (sekitar 20-30 detik) karena AI sedang memformulasikan seluruh rincian pertemuan terstruktur. Harap tunggu dan jangan menutup halaman ini.
