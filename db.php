@@ -15,10 +15,25 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-    // Membuat database jika belum ada
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE `$db`");
+    try {
+        // Coba koneksi langsung ke database (standar server produksi / shared hosting)
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $pdo = new PDO($dsn, $user, $pass, $options);
+    } catch (PDOException $e) {
+        // Jika database belum ada, coba buat otomatis (hanya bekerja jika memiliki izin CREATE DATABASE)
+        if ($e->getCode() == 1049 || stripos($e->getMessage(), 'Unknown database') !== false) {
+            try {
+                $dsnBase = "mysql:host=$host;charset=$charset";
+                $pdo = new PDO($dsnBase, $user, $pass, $options);
+                $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                $pdo->exec("USE `$db`");
+            } catch (PDOException $createEx) {
+                throw new Exception("Koneksi database gagal: " . $createEx->getMessage());
+            }
+        } else {
+            throw new Exception("Koneksi database gagal: " . $e->getMessage());
+        }
+    }
     
     // Periksa apakah tabel 'users' sudah ada, jika belum impor schema.sql
     $result = $pdo->query("SHOW TABLES LIKE 'users'");
