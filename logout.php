@@ -1,6 +1,8 @@
 <?php
-session_start();
-$_SESSION = array();
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/auth.php';
+
+$_SESSION = [];
 
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();

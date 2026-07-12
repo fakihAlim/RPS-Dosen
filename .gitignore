@@ -9,6 +9,8 @@ debug_response.json
 
 # Composer dependencies
 /vendor/
+
+# Local session files (filesystem fallback)
 /sessions/
 
 # IDE / Editor configurations

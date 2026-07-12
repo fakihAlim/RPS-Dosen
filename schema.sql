@@ -1,7 +1,9 @@
-CREATE DATABASE IF NOT EXISTS `rps_generator`;
-USE `rps_generator`;
+-- ============================================================
+-- RPS Generator AI - Database Schema (Production)
+-- Jalankan skrip ini SEKALI di phpMyAdmin saat setup awal.
+-- Pastikan Anda sudah memilih database yang benar sebelum menjalankan.
+-- ============================================================
 
--- 1. Tabel users
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `username` VARCHAR(50) NOT NULL UNIQUE,
@@ -19,7 +21,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 2. Tabel rps
 CREATE TABLE IF NOT EXISTS `rps` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
@@ -46,7 +47,6 @@ CREATE TABLE IF NOT EXISTS `rps` (
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 3. Tabel rps_meetings
 CREATE TABLE IF NOT EXISTS `rps_meetings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `rps_id` INT NOT NULL,
@@ -62,7 +62,6 @@ CREATE TABLE IF NOT EXISTS `rps_meetings` (
   FOREIGN KEY (`rps_id`) REFERENCES `rps` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 4. Tabel email_logs
 CREATE TABLE IF NOT EXISTS `email_logs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `to_email` VARCHAR(100) NOT NULL,
@@ -73,7 +72,6 @@ CREATE TABLE IF NOT EXISTS `email_logs` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 5. Tabel activity_logs
 CREATE TABLE IF NOT EXISTS `activity_logs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT DEFAULT NULL,
@@ -82,4 +80,11 @@ CREATE TABLE IF NOT EXISTS `activity_logs` (
   `ip_address` VARCHAR(45) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `php_sessions` (
+  `id` VARCHAR(128) NOT NULL PRIMARY KEY,
+  `data` TEXT NOT NULL,
+  `expires_at` DATETIME NOT NULL,
+  INDEX `idx_expires` (`expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

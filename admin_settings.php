@@ -77,16 +77,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $smtp_host = trim($_POST['smtp_host'] ?? '');
     $smtp_port = trim($_POST['smtp_port'] ?? '587');
     $smtp_user = trim($_POST['smtp_user'] ?? '');
-    $smtp_pass = trim($_POST['smtp_pass'] ?? '');
+    $smtp_pass_input = trim($_POST['smtp_pass'] ?? '');
     $smtp_secure = trim($_POST['smtp_secure'] ?? 'tls');
     $smtp_from = trim($_POST['smtp_from'] ?? '');
     $smtp_from_name = trim($_POST['smtp_from_name'] ?? 'RPS Generator AI');
     $smtp_debug = isset($_POST['smtp_debug']) ? 'true' : 'false';
-    $check_mail_api_key = trim($_POST['check_mail_api_key'] ?? '');
+    $check_mail_api_key_input = trim($_POST['check_mail_api_key'] ?? '');
+
+    // Jika password kosong atau berupa placeholder, gunakan nilai lama dari .env
+    $smtp_pass = (!empty($smtp_pass_input) && $smtp_pass_input !== '••••••••') ? $smtp_pass_input : ($_ENV['SMTP_PASS'] ?? '');
+    $check_mail_api_key = (!empty($check_mail_api_key_input) && $check_mail_api_key_input !== '••••••••') ? $check_mail_api_key_input : ($_ENV['CHECK_MAIL_API_KEY'] ?? '');
 
     // Validasi dasar
-    if (empty($smtp_host) || empty($smtp_user) || empty($smtp_pass) || empty($smtp_from)) {
-        $error = 'Host SMTP, Username, Password, dan Email Pengirim wajib diisi.';
+    if (empty($smtp_host) || empty($smtp_user) || empty($smtp_from)) {
+        $error = 'Host SMTP, Username, dan Email Pengirim wajib diisi.';
+    } elseif (empty($smtp_pass)) {
+        $error = 'Password SMTP wajib diisi (minimal sekali saat konfigurasi awal).';
     } elseif (!filter_var($smtp_from, FILTER_VALIDATE_EMAIL)) {
         $error = 'Format Email Pengirim tidak valid.';
     } elseif (!is_numeric($smtp_port)) {
@@ -122,16 +128,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Muat nilai konfigurasi SMTP saat ini
+// Muat nilai konfigurasi SMTP saat ini (nilai sensitif di-mask)
 $current_host = $_ENV['SMTP_HOST'] ?? '';
 $current_port = $_ENV['SMTP_PORT'] ?? '587';
 $current_user = $_ENV['SMTP_USER'] ?? '';
-$current_pass = $_ENV['SMTP_PASS'] ?? '';
+$has_smtp_pass = !empty($_ENV['SMTP_PASS'] ?? '');
 $current_secure = $_ENV['SMTP_SECURE'] ?? 'tls';
 $current_from = $_ENV['SMTP_FROM'] ?? '';
 $current_from_name = $_ENV['SMTP_FROM_NAME'] ?? 'RPS Generator AI';
 $current_debug = filter_var($_ENV['SMTP_DEBUG'] ?? true, FILTER_VALIDATE_BOOLEAN);
-$current_check_mail_key = $_ENV['CHECK_MAIL_API_KEY'] ?? '';
+$has_check_mail_key = !empty($_ENV['CHECK_MAIL_API_KEY'] ?? '');
 
 require_once 'header.php';
 ?>
@@ -193,7 +199,7 @@ require_once 'header.php';
             <div class="form-group">
                 <label class="form-label" for="smtp_pass">SMTP Password / App Password</label>
                 <div style="position: relative; display: flex; align-items: center;">
-                    <input class="form-control" type="password" id="smtp_pass" name="smtp_pass" placeholder="Masukkan password SMTP atau App Password 16-digit" value="<?= htmlspecialchars($current_pass) ?>" style="padding-right: 6rem;" required>
+                    <input class="form-control" type="password" id="smtp_pass" name="smtp_pass" placeholder="<?= $has_smtp_pass ? 'Biarkan kosong jika tidak ingin mengubah' : 'Masukkan password SMTP atau App Password 16-digit' ?>" value="<?= $has_smtp_pass ? '••••••••' : '' ?>" style="padding-right: 6rem;">
                     <button type="button" id="toggle-smtp-pass" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
                         Tampilkan
                     </button>
@@ -220,7 +226,7 @@ require_once 'header.php';
                 <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.85rem;">Gunakan API Check-Mail.org untuk mendeteksi email sekali pakai (disposable) dan mencegah pendaftaran email palsu.</p>
                 <div class="form-group">
                     <label class="form-label" for="check_mail_api_key">Check-Mail.org API Key</label>
-                    <input class="form-control" type="text" id="check_mail_api_key" name="check_mail_api_key" placeholder="Masukkan API Key dari check-mail.org" value="<?= htmlspecialchars($current_check_mail_key) ?>">
+                    <input class="form-control" type="password" id="check_mail_api_key" name="check_mail_api_key" placeholder="<?= $has_check_mail_key ? 'Biarkan kosong jika tidak ingin mengubah' : 'Masukkan API Key dari check-mail.org' ?>" value="<?= $has_check_mail_key ? '••••••••' : '' ?>">
                     <small style="display: block; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.8rem;">
                         *Dapatkan API Key secara gratis atau berbayar di <a href="https://check-mail.org" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">check-mail.org</a>. Kosongkan jika ingin menonaktifkan pemeriksaan API ini.
                     </small>
