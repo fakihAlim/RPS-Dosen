@@ -31,7 +31,8 @@ try {
                 throw new Exception("Koneksi database gagal: " . $createEx->getMessage());
             }
         } else {
-            throw new Exception("Koneksi database gagal: " . $e->getMessage());
+            $diag = "Host: {$host}, DB: {$db}, User: {$user}, ENV[DB_NAME]: " . ($_ENV['DB_NAME'] ?? 'NULL') . ", SERVER[DB_NAME]: " . ($_SERVER['DB_NAME'] ?? 'NULL') . ", getenv(DB_NAME): " . (getenv('DB_NAME') ?: 'NULL');
+            throw new Exception("Koneksi database gagal. [Diag: {$diag}] | Error: " . $e->getMessage());
         }
     }
     
