@@ -19,6 +19,12 @@ try {
     
     $decrypted_key = decryptApiKey($user_data['api_key'] ?? '');
     $current_model = $user_data['ai_model'] ?? 'gemini-3.5-flash';
+    
+    // Hitung jumlah pemakaian model AI oleh dosen ini
+    $usage_count = 0;
+    $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND (activity = 'GENERATE_RPS_CPL_CPMK' OR activity = 'GENERATE_RPS_MEETINGS')");
+    $stmtCount->execute([$user_id]);
+    $usage_count = $stmtCount->fetchColumn();
 } catch (PDOException $e) {
     $error = 'Gagal memuat data: ' . $e->getMessage();
 }
@@ -57,7 +63,19 @@ require_once 'header.php';
         <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
             Pengaturan Profil Dosen
         </h2>
-        <p style="color: var(--text-muted); margin-bottom: 2rem;">Konfigurasikan API Key Google AI Studio Anda untuk mengaktifkan fitur kecerdasan buatan.</p>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Konfigurasikan API Key Google AI Studio Anda untuk mengaktifkan fitur kecerdasan buatan.</p>
+
+        <!-- Informasi Pemakaian Model AI -->
+        <div style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <span style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Model AI Aktif saat ini:</span>
+                <strong style="font-size: 1rem; color: var(--accent-primary); text-transform: uppercase;"><?= htmlspecialchars($current_model) ?></strong>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Jumlah Pemakaian AI Anda:</span>
+                <strong style="font-size: 1.25rem; color: var(--text-primary);"><?= (int)$usage_count ?> Kali</strong>
+            </div>
+        </div>
 
         <?php if (!empty($success)): ?>
             <div class="alert alert-success">
@@ -94,6 +112,9 @@ require_once 'header.php';
                 <small style="display: block; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.8rem;">
                     Model default ini akan digunakan secara otomatis saat Anda melakukan generate CPL, CPMK, maupun rincian 16 pertemuan.
                 </small>
+                <div style="background-color: rgba(5, 150, 105, 0.05); border: 1px dashed var(--success); padding: 0.75rem; border-radius: 6px; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-primary); line-height: 1.4;">
+                    <strong>Sistem Pemulihan Mandiri (Self-Healing AI Model):</strong> Jika model pilihan Anda penuh (*rate limited*) atau mengalami kegagalan, sistem secara otomatis akan mengalihkan koneksi ke model alternatif cadangan agar proses pembuatan RPS Anda tidak terganggu.
+                </div>
             </div>
 
             <button class="btn btn-primary" type="submit" style="width: 100%; margin-top: 1.5rem;">Simpan Pengaturan</button>

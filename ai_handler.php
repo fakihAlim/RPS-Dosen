@@ -8,16 +8,46 @@ requireLogin();
 /**
  * Mengirim request POST ke Gemini API.
  */
+/**
+ * Mengirim request POST ke Gemini API (dengan mekanisme auto-switch jika error/penuh).
+ */
 function callGeminiApi($prompt, $apiKey, $model = 'gemini-3.1-flash', $isJson = true) {
+    try {
+        return executeGeminiRequest($prompt, $apiKey, $model, $isJson);
+    } catch (Exception $e) {
+        // Tentukan model alternatif
+        $alternative = ($model === 'gemini-3.5-flash') ? 'gemini-3.1-flash' : 'gemini-3.5-flash';
+        
+        // Simpan perubahan model di DB dan log aktivitas jika user_id diset di session
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            try {
+                global $pdo;
+                $stmtUpdate = $pdo->prepare("UPDATE users SET ai_model = ? WHERE id = ?");
+                $stmtUpdate->execute([$alternative, $user_id]);
+                logActivity($user_id, 'AI_MODEL_AUTO_SWITCH', "Mengalihkan model otomatis dari {$model} ke {$alternative} karena error: " . $e->getMessage());
+            } catch (PDOException $dbEx) {}
+        }
+        
+        // Uji coba ulang menggunakan model alternatif
+        return executeGeminiRequest($prompt, $apiKey, $alternative, $isJson);
+    }
+}
+
+/**
+ * Pemanggilan API Gemini yang sesungguhnya.
+ */
+function executeGeminiRequest($prompt, $apiKey, $model = 'gemini-3.1-flash', $isJson = true) {
     // Normalisasi nama model ke API resmi
-    if ($model === 'gemini-3.1-flash' || $model === 'gemini-1.5-flash') {
-        $model = 'gemini-3.1-flash-lite';
-    } elseif ($model === 'gemini-2.0-flash') {
-        $model = 'gemini-3.5-flash';
+    $normalized_model = $model;
+    if ($normalized_model === 'gemini-3.1-flash' || $normalized_model === 'gemini-1.5-flash') {
+        $normalized_model = 'gemini-3.1-flash-lite';
+    } elseif ($normalized_model === 'gemini-2.0-flash') {
+        $normalized_model = 'gemini-3.5-flash';
     }
     
     // Model dikirim ke URL endpoint API Google Gemini
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$normalized_model}:generateContent?key={$apiKey}";
     
     $requestData = [
         "contents" => [
@@ -38,7 +68,7 @@ function callGeminiApi($prompt, $apiKey, $model = 'gemini-3.1-flash', $isJson = 
     }
     
     // Matikan thinking untuk model Gemini 3.5 (reasoning model) agar tidak menghabiskan token output
-    if (stripos($model, '3.5') !== false || stripos($model, '2.0') !== false) {
+    if (stripos($normalized_model, '3.5') !== false || stripos($normalized_model, '2.0') !== false) {
         $requestData["generationConfig"]["thinkingConfig"] = [
             "thinkingBudget" => 0
         ];
