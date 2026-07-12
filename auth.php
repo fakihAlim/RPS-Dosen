@@ -1,5 +1,13 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    // Override folder penyimpanan session ke dalam proyek jika folder temp default di hosting tidak memiliki izin tulis
+    $sessionPath = __DIR__ . '/sessions';
+    if (!file_exists($sessionPath)) {
+        @mkdir($sessionPath, 0700, true);
+    }
+    if (is_writable($sessionPath)) {
+        session_save_path($sessionPath);
+    }
     session_start();
 }
 

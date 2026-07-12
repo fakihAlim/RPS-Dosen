@@ -9,6 +9,7 @@ debug_response.json
 
 # Composer dependencies
 /vendor/
+/sessions/
 
 # IDE / Editor configurations
 .idea/
