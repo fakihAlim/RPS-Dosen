@@ -73,11 +73,21 @@ require_once 'header.php';
 </div>
 
 <?php if (!$api_key_configured): ?>
-    <div class="alert alert-danger" style="margin-bottom: 2rem;">
-        <div>
+    <div class="alert alert-danger" style="margin-bottom: 2rem; display: block;">
+        <div style="margin-bottom: 1rem;">
             <strong>API Key Belum Dikonfigurasi!</strong> Anda harus mengatur Gemini API Key terlebih dahulu di menu 
             <a href="settings.php" style="color: inherit; text-decoration: underline; font-weight: 700;">Pengaturan</a> 
             sebelum dapat membuat RPS menggunakan bantuan AI.
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.95); border: 1px solid var(--border-color); color: var(--text-primary); padding: 1rem; border-radius: 6px; font-size: 0.85rem; line-height: 1.5;">
+            <strong style="display: block; margin-bottom: 0.5rem; color: var(--error);">Cara Mendapatkan Gemini API Key secara Gratis:</strong>
+            <ol style="margin: 0; padding-left: 1.25rem;">
+                <li>Kunjungi portal pengembang Google AI Studio di <a href="https://aistudio.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline; font-weight: 600;">aistudio.google.com</a>.</li>
+                <li>Masuk menggunakan akun Google / Gmail Anda.</li>
+                <li>Klik tombol <strong>Get API Key</strong> di bagian menu navigasi.</li>
+                <li>Klik tombol <strong>Create API Key</strong>, lalu pilih opsi untuk membuat kunci pada proyek baru atau proyek yang sudah ada.</li>
+                <li>Salin API Key yang berhasil dibuat, lalu masukkan di menu <a href="settings.php" style="color: var(--accent-primary); text-decoration: underline; font-weight: 600;">Pengaturan</a> aplikasi ini.</li>
+            </ol>
         </div>
     </div>
 <?php endif; ?>
